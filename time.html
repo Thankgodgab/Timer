@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Countdown Timer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-color: #282c34;
+            color: #ffffff;
+            margin: 0;
+        }
+        .container {
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('./assest/background.jpg');
+            background-size: cover;
+            /* background-position: top; */
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            height: 85%;
+        }
+        input {
+            width: 80px;
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            background-color: #565a6a;
+            color: #ffffff;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #4a4e63;
+        }
+        #start-btn { background-color: #4caf50; }
+        #pause-btn { background-color: #ff9800; }
+        #continue-btn { background-color: #2196f3; }
+        #stop-btn { background-color: #f44336; }
+        #reset-btn { background-color: #9c27b0; }
+        #countdown {
+            font-size: 40vh; /* 70% of viewport height */
+            margin: 20px;
+            font-weight: bold;
+        }
+        .blink {
+            animation: blinker 1s linear infinite;
+            color: red;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <input type="number" id="hours-input" placeholder="Hours" min="0">
+            <input type="number" id="minutes-input" placeholder="Minutes" min="0" max="59">
+            <input type="number" id="seconds-input" placeholder="Seconds" min="0" max="59">
+        </div>
+        <div>
+            <button id="start-btn">Start</button>
+            <button id="pause-btn">Pause</button>
+            <button id="continue-btn">Continue</button>
+            <!-- <button id="reset-btn">Reset</button> -->
+        </div>
+        <div id="countdown">00:00:00</div>
+    </div>
+
+    <script>
+        let countdown;
+        let timeLeft;
+        let isPaused = false;
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            const hours = parseInt(document.getElementById('hours-input').value) || 0;
+            const minutes = parseInt(document.getElementById('minutes-input').value) || 0;
+            const seconds = parseInt(document.getElementById('seconds-input').value) || 0;
+            timeLeft = (hours * 3600) + (minutes * 60) + seconds;
+            if (timeLeft > 0) {
+                document.getElementById('countdown').textContent = formatTime(timeLeft);
+                document.getElementById('countdown').classList.remove('blink');
+                clearInterval(countdown);
+                countdown = setInterval(updateCountdown, 1000);
+            }
+        });
+
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            if (!isPaused) {
+                clearInterval(countdown);
+                isPaused = true;
+            }
+        });
+
+        document.getElementById('continue-btn').addEventListener('click', () => {
+            if (isPaused) {
+                countdown = setInterval(updateCountdown, 1000);
+                isPaused = false;
+            }
+        });
+
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            clearInterval(countdown);
+            document.getElementById('countdown').textContent = '00:00:00';
+            document.getElementById('countdown').classList.remove('blink');
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            clearInterval(countdown);
+            document.getElementById('hours-input').value = '';
+            document.getElementById('minutes-input').value = '';
+            document.getElementById('seconds-input').value = '';
+            document.getElementById('countdown').textContent = '00:00:00';
+            document.getElementById('countdown').classList.remove('blink');
+            isPaused = false;
+        });
+
+        function updateCountdown() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById('countdown').textContent = formatTime(timeLeft);
+            } else {
+                clearInterval(countdown);
+                document.getElementById('countdown').textContent = '00:00:00';
+                document.getElementById('countdown').classList.add('blink');
+            }
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
